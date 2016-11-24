@@ -30,6 +30,7 @@ predictions <- function(model,data)
   beta <- summary(model)$coefficients[,1]
   draws <- mvrnorm(500000,beta,diag(se^2))
   sims <- draws %*% as.matrix(unlist(c(1,demo_dre)))
+  sims <- sort(sims)[round(0.025*500000):round(0.975*500000)]
   sims
 }
 
@@ -93,6 +94,13 @@ mtext("2016 Election Results by County",side=3, line=1, cex=2, col="white")
 mtext("Benjamin J. Radford", side=3, line=-1, cex=1, col="white")
 dev.off()
 
+## Output header image
+png("header_map.png",width=1200,height=600)
+myPal <- colorRampPalette(rev(brewer.pal(7,"RdBu")[c(1,1,2,4,6,7,7)]))
+par(bg="#444444")
+plot(us, col=myPal(100)[us$gop_ratio * 99 + 1], border=ifelse(us$dre,"white",NA))
+dev.off()
+
 ## Output population map
 png("population_map.png",width=1024,height=612)
 myPal <- colorRampPalette(brewer.pal(7,"YlGnBu"))
@@ -131,7 +139,7 @@ model_pa_a <- lm(gop_vote ~ electronic, data=pa_data)
 model_pa_b <- lm(gop_vote ~ electronic + population + unemployment + college + percent_white, data=pa_data)
 
 ## Output model tables
-sjt.lmer(model_a,model_b,file="table.html")
+sjt.lmer(model_a,model_b,file="national_table.html")
 sjt.lm(model_wi_a,model_wi_b,model_pa_a,model_pa_b,file="wi_pa_table.html")
 
 ## Out-of-sample prediction

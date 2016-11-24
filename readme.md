@@ -18,4 +18,12 @@ This project includes code and data necessary to analyze the 2016 U.S. president
 * __data/Unemployment.csv__: Unemployment data from the [U.S. Department of Agriculture](https://www.ers.usda.gov/data-products/county-level-data-sets/download-data.aspx).
 * __data/election_results.csv__: 2016 U.S. presidential election results from [tonmcg](https://github.com/tonmcg/County_Level_Election_Results_12-16).
 * __data/verifier-search.csv__: 2016 U.S. presidential election voting technology from [VerifiedVoting.org](https://www.verifiedvoting.org).
-* __cb_2015_us_county_200k__: County-level (adm02) shapefile for U.S.A.
+* __cb_2015_us_county_200k__: County-level (adm02) shapefile for U.S.A. from the [U.S. Census Bureau](https://www.census.gov/geo/maps-data/data/cbf/cbf_counties.html).
+
+## Model choices:
+
+The dependent variable is the _proportion of vote_ received by the GOP candidate, Donald Trump, per county. Predictors include _electronic voting machines (indicator)_, _population (logged)_, _percent unemployment_, _percent college degree_, and _precent white_. For simplicity the dependent variable is conceptualized as a continuous-valued response and no link function is used. Therefore, these are purely linear models and predicted values are not bound by 0 and 1 as proportions would be.
+
+For the national models, linear mixed effects models are selected. Random intercepts are included per state. For that state-level models, standard linear regression models are selected.
+
+For data merging issues, Alaska is omitted. For ease of visualization, Hawaii is also omitted.
