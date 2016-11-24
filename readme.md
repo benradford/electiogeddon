@@ -1,6 +1,7 @@
 # Electiogeddon
-Benjamin J. Radford
-November 24, 2016 
+Benjamin J. Radford  
+November 24, 2016  
+[http://www.benradford.com/](http://www.benradford.com)  
 
 ---------
 
@@ -11,7 +12,7 @@ This project includes code and data necessary to analyze the 2016 U.S. president
 ## Contents:
 
 * __electiogeddon.r__: Code to analyze election results and produce visualizations.
-* __data/census_cleaned__: Demographic data on race and sex from the U.S. Census Bureau.
+* __data/census_cleaned__: Demographic data on race and sex from the [U.S. Census Bureau](https://www.census.gov/popest/data/counties/asrh/2015/index.html).
 * __data/Education.csv__: Education data from the [U.S. Department of Agriculture](https://www.ers.usda.gov/data-products/county-level-data-sets/download-data.aspx).
 * __data/PopulationEstimates.csv__: Population data from the [U.S. Department of Agriculture](https://www.ers.usda.gov/data-products/county-level-data-sets/download-data.aspx).
 * __data/Unemployment.csv__: Unemployment data from the [U.S. Department of Agriculture](https://www.ers.usda.gov/data-products/county-level-data-sets/download-data.aspx).
