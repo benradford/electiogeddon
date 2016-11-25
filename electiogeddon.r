@@ -202,15 +202,16 @@ for(ss in states_with_dre)
     
     dens_dre <- density(sims_dre)
     dens_dre <- data.frame(x=dens_dre$x, y=dens_dre$y)
-    dens_dre <- dens_dre[dens_dre$x >= 0 & dens_dre$x <= 1,]
-    dens_dre <- rbind(c(0,0),dens_dre,c(1,0))
-    
     dens_nodre <- density(sims_nodre)
     dens_nodre <- data.frame(x=dens_nodre$x, y=dens_nodre$y)
+    
+    standardY <- max(c(dens_dre$y,dens_nodre$y))
+    
+    dens_dre <- dens_dre[dens_dre$x >= 0 & dens_dre$x <= 1,]
+    dens_dre <- rbind(c(0,0),dens_dre,c(1,0))
     dens_nodre <- dens_nodre[dens_nodre$x >= 0 & dens_nodre$x <= 1,]
     dens_nodre <- rbind(c(0,0),dens_nodre,c(1,0))
     
-    standardY <- max(c(dens_dre$y,dens_nodre$y))
     dens_dre$y <- dens_dre$y/standardY/4
     dens_nodre$y <- dens_nodre$y/standardY/4
     
