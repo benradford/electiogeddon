@@ -18,20 +18,17 @@ library(sjPlot)
 library(MASS)
 library(RColorBrewer)
 
-predictions <- function(model,data)
+predictions <- function(model)
 {
-  ## Function to draw from lm model posterior predictive distribution.
+  ## Function to draw random coefficients for lm predictions.
   ## args
   ##  model: a model object from lm.
-  ##  data: new data to predict on.
   ## returns
-  ##  A vector of size 500,000 of predicted values.
+  ##  A matrix of size 500,000 x D where D is the number of coefficients.
   se <- summary(model)$coefficients[,2]
   beta <- summary(model)$coefficients[,1]
-  draws <- mvrnorm(50000,beta,diag(se^2))
-  sims <- draws %*% as.matrix(unlist(c(1,data)))
-  # sims <- sort(sims)[round(0.025*50000):round(0.975*50000)]
-  sims
+  draws <- mvrnorm(500000,beta,diag(se^2))
+  draws
 }
 
 ## Vectors for converting state name to state abbreviation
@@ -180,6 +177,7 @@ for(ss in states_with_dre)
   model_list <- c(model_list,list(lm(gop_vote ~ electronic + population + unemployment + college + percent_white, data=state_data)))
 }
 names(model_list) <- states_with_dre
+
 demo_dre <- demo_nodre <- as.data.frame(t(colMeans(us_data[,!names(us_data) %in% c("state","gop_vote")],na.rm=T)))
 demo_dre$electronic <- 1
 demo_nodre$electronic <- 0
@@ -195,17 +193,22 @@ for(ss in states_with_dre)
   
   if(sum(is.na(coef(model_list[[ss]]))) == 0)
   {
-    sims_dre <- predictions(model_list[[ss]],demo_dre)
+    draws <- predictions(model_list[[ss]])
+    sims_dre <- draws %*% as.matrix(unlist(c(1,demo_dre)))
+    sims_nodre <- draws %*% as.matrix(unlist(c(1,demo_nodre)))
+    # sims_dre <- sort(sims_dre[round(.025*500000):round(0.975*500000)])
+    # sims_nodre <- sort(sims_nodre[round(.025*500000):round(0.975*500000)])
+    
     dens_dre <- density(sims_dre)
     dens_dre <- data.frame(x=dens_dre$x, y=dens_dre$y)
-    dens_dre$x <- (dens_dre$x - min(dens_dre$x)) / (max(dens_dre$x) - min(dens_dre$x))
+    dens_dre <- dens_dre[dens_dre$x >= 0 & dens_dre$x <= 1,]
     dens_dre <- rbind(c(0,0),dens_dre,c(1,0))
     
-    sims_nodre <- predictions(model_list[[ss]],demo_nodre)
     dens_nodre <- density(sims_nodre)
     dens_nodre <- data.frame(x=dens_nodre$x, y=dens_nodre$y)
-    dens_nodre$x <- (dens_nodre$x - min(dens_nodre$x)) / (max(dens_nodre$x) - min(dens_nodre$x))
+    dens_nodre <- dens_nodre[dens_nodre$x >= 0 & dens_nodre$x <= 1,]
     dens_nodre <- rbind(c(0,0),dens_nodre,c(1,0))
+    
     
     dens_dre$y <- dens_dre$y/max(dens_dre$y)/4
     dens_nodre$y <- dens_nodre$y/max(dens_nodre$y)/4
