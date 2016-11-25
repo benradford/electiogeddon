@@ -5,6 +5,8 @@ November 24, 2016
 
 ---------
 
+![2016 Electiogeddon U.S. Map](https://raw.githubusercontent.com/benradford/electiogeddon/images/header_map.png)
+
 ## Description:
 
 This project includes code and data necessary to analyze the 2016 U.S. presidential election results by county. Particular attention is paid to identifying discrepencies in vote based on the voting technology utilized per county (electronic versus paper or optical ballot). Further analyses of these data are encouraged.
