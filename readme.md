@@ -1,7 +1,7 @@
 # Electiogeddon
 Benjamin J. Radford  
 November 24, 2016  
-[http://www.benradford.com/](http://www.benradford.com/electiogeddon/)  
+[http://www.benradford.com/electiogeddon/](http://www.benradford.com/electiogeddon/)  
 
 ---------
 
