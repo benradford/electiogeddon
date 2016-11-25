@@ -5,7 +5,7 @@ November 24, 2016
 
 ---------
 
-![2016 Electiogeddon U.S. Map](https://raw.githubusercontent.com/benradford/electiogeddon/images/header_map.png)
+![2016 Electiogeddon U.S. Map](https://github.com/benradford/electiogeddon/raw/master/images/header_map.png)
 
 ## Description:
 
