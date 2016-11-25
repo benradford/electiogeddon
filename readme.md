@@ -1,7 +1,7 @@
 # Electiogeddon
 Benjamin J. Radford  
 November 24, 2016  
-[http://www.benradford.com/](http://www.benradford.com)  
+[http://www.benradford.com/](http://www.benradford.com/electiogeddon/)  
 
 ---------
 
@@ -27,3 +27,5 @@ The dependent variable is the _proportion of vote_ received by the GOP candidate
 For the national models, linear mixed effects models are selected. Random intercepts are included per state. For that state-level models, standard linear regression models are selected.
 
 For data merging issues, Alaska is omitted. For ease of visualization, Hawaii is also omitted.
+
+A full write-up can be found at [http://www.benradford.com/electiogeddon](http://www.benradford.com/electiogeddon).

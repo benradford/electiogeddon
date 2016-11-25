@@ -28,9 +28,9 @@ predictions <- function(model,data)
   ##  A vector of size 500,000 of predicted values.
   se <- summary(model)$coefficients[,2]
   beta <- summary(model)$coefficients[,1]
-  draws <- mvrnorm(500000,beta,diag(se^2))
-  sims <- draws %*% as.matrix(unlist(c(1,demo_dre)))
-  sims <- sort(sims)[round(0.025*500000):round(0.975*500000)]
+  draws <- mvrnorm(50000,beta,diag(se^2))
+  sims <- draws %*% as.matrix(unlist(c(1,data)))
+  # sims <- sort(sims)[round(0.025*50000):round(0.975*50000)]
   sims
 }
 
