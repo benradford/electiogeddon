@@ -95,7 +95,8 @@ dev.off()
 png("header_map.png",width=1200,height=600)
 myPal <- colorRampPalette(rev(brewer.pal(7,"RdBu")[c(1,1,2,4,6,7,7)]))
 par(bg="#444444")
-plot(us, col=myPal(100)[us$gop_ratio * 99 + 1], border=ifelse(us$dre,"white",NA))
+plot(us, col=myPal(100)[us$gop_ratio * 99 + 1], border=NA) #ifelse(us$dre,"white",NA))
+plot(us[us$dre==1,], border="white",add=T)
 dev.off()
 
 ## Output population map
@@ -119,7 +120,7 @@ dev.off()
 ## Output electronic voting map
 png("electronic_voting.png",width=1024,height=612)
 par(bg="#444444")
-plot(us, col=ifelse(us$dre, "#b2182b", "#e0e0e0"))
+plot(us, col=ifelse(us$dre, "#b2182b", "#e0e0e0"), border=NA)
 mtext("Electronic Voting Machines",side=3, line=1, cex=2, col="white")
 mtext("Benjamin J. Radford", side=3, line=-1, cex=1, col="white")
 dev.off()
