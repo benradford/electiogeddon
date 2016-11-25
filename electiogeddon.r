@@ -210,9 +210,9 @@ for(ss in states_with_dre)
     dens_nodre <- dens_nodre[dens_nodre$x >= 0 & dens_nodre$x <= 1,]
     dens_nodre <- rbind(c(0,0),dens_nodre,c(1,0))
     
-    
-    dens_dre$y <- dens_dre$y/max(dens_dre$y)/4
-    dens_nodre$y <- dens_nodre$y/max(dens_nodre$y)/4
+    standardY <- max(c(dens_dre$y,dens_nodre$y))
+    dens_dre$y <- dens_dre$y/standardY/4
+    dens_nodre$y <- dens_nodre$y/standardY/4
     
     polygon(grconvertX(dens_nodre$x, from="npc", to="user"),grconvertY(dens_nodre$y, from="npc", to="user"), col="#e0e0e099", border="white")
     polygon(grconvertX(dens_dre$x, from="npc", to="user"),grconvertY(dens_dre$y, from="npc", to="user"), col="#b2182b99", border="white")
