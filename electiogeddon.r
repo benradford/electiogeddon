@@ -18,7 +18,7 @@ library(sjPlot)
 library(MASS)
 library(RColorBrewer)
 
-predictions <- function(model)
+predictions <- function(model,n=500000)
 {
   ## Function to draw random coefficients for lm predictions.
   ## args
@@ -27,7 +27,7 @@ predictions <- function(model)
   ##  A matrix of size 500,000 x D where D is the number of coefficients.
   se <- summary(model)$coefficients[,2]
   beta <- summary(model)$coefficients[,1]
-  draws <- mvrnorm(500000,beta,diag(se^2))
+  draws <- mvrnorm(n,beta,diag(se^2))
   draws
 }
 
@@ -230,4 +230,82 @@ dev.off()
 
 
 
+##
+## Quasibinomial regression models
+##
 
+predictionsPart2 <- function(preds, model, newdata)
+{
+  predicted_value <- list()
+  for(ii in 1:nrow(preds))
+  {
+    model$coefficients <- preds[ii,]
+    predicted_value <- c(predicted_value,list(predict(model, newdata, type="response")))
+  }
+  predicted_value <- do.call(c,predicted_value)
+  predicted_value
+}
+
+## Run models
+## Using glm instead of glmer because of availability of quasipoisson and convergence issues with glmer binomial modesl.
+us_data <- data.frame("gop_vote"=us$gop_ratio, "electronic"=as.numeric(us$dre), "state"=as.factor(us$state_abbr), "population"=us$pop, "unemployment"=us$unemployment, "college"=us$college, "percent_white"=us$percent_white*100)
+model_a <- glm(gop_vote ~ electronic + as.factor(state), data=us_data, family=quasibinomial)
+model_b <- glm(gop_vote ~ electronic + population + unemployment + college + percent_white + as.factor(state), data=us_data, family=quasibinomial)
+summary(model_a)
+summary(model_b)
+
+## Subset to states that have both electronic (DRE) and non-electronic voting
+states_with_dre <- sort(unique(us$state_abbr[us$dre!=0]))
+states_without_dre <- sort(unique(us$state_abbr[us$dre==0]))
+states_with_dre <- intersect(states_with_dre, states_without_dre)
+
+## Run models for states with both electronic and non-electronic voting
+model_list <- list()
+for(ss in states_with_dre)
+{
+  state_data <- us_data[us_data$state==ss,]
+  state_data[complete.cases(state_data),]
+  model_list <- c(model_list,list(glm(gop_vote ~ electronic + population + unemployment + college + percent_white, family=quasibinomial, data=state_data)))
+}
+names(model_list) <- states_with_dre
+
+demo_dre <- demo_nodre <- as.data.frame(t(colMeans(us_data[,!names(us_data) %in% c("state","gop_vote")],na.rm=T)))
+demo_dre$electronic <- 1
+demo_nodre$electronic <- 0
+
+## Output state-wise maps
+png("dre_states_quasibinomial.png",width=1024,height=1024)
+myPal <- colorRampPalette(rev(brewer.pal(7,"RdBu")[c(1,2,4,6,7)]))
+par(mfrow=c(ceiling(sqrt(length(states_with_dre))), ceiling(sqrt(length(states_with_dre)))), mar=c(3.1,1.1,3.1,1.1), bg="#444444")
+for(ss in states_with_dre)
+{
+  plot(us[us$state_abbr==ss,],col=ifelse(us$dre[us$state_abbr==ss],"#b2182b", "#999999"), border=NA)  
+  mtext(ss,3,line=0,cex=2,col="white")
+  
+  if(sum(is.na(coef(model_list[[ss]]))) == 0)
+  {
+    draws <- predictions(model_list[[ss]],n=5000)
+    sims_dre <- predictionsPart2(draws, model_list[[ss]], demo_dre)
+    sims_nodre <- predictionsPart2(draws, model_list[[ss]], demo_nodre)
+    
+    sims_dre <- c(round(sims_dre * 20),0:20)/20
+    sims_nodre <- c(round(sims_nodre * 20),0:20)/20
+    dens_dre <- table(sims_dre)-1
+    dens_nodre <- table(sims_nodre)-1
+    
+    scaling <- max(c(dens_dre,dens_nodre))
+    dens_dre <- dens_dre/scaling/4
+    dens_nodre <- dens_nodre/scaling/4
+    
+    rect(grconvertX((0:20)/21,"npc","user"),grconvertY(dens_nodre,"npc","user"),grconvertX((1:21)/21,"npc","user"),grconvertY(0,"npc","user"),col="#e0e0e099",border=NA)
+    rect(grconvertX((0:20)/21,"npc","user"),grconvertY(dens_dre,"npc","user"),grconvertX((1:21)/21,"npc","user"),grconvertY(0,"npc","user"),col="#b2182b99",border=NA)
+    
+    mtext(sprintf("beta: %.2f  |  s.e.: %.2f  |  t: %.2f", coef(model_list[[ss]])["electronic"], summary(model_list[[ss]])$coefficients[,2]['electronic'], summary(model_list[[ss]])$coefficients[,3]['electronic']),1,line=0.25,col="white")
+  }
+}
+plot(0,0,type="n",frame=F,xaxt="n",yaxt="n",xlim=c(0,1),ylim=c(0,1))
+rect(0,0,0.25,0.25,col="#e0e0e0",border="white")
+rect(0,0.5,0.25,0.75,col="#b2182b",border="white")
+text(0.3,0.25/2,"No E-Voting",cex=2,pos=4,col="white")
+text(0.3,0.25/2+0.5,"E-Voting",cex=2,pos=4,col="white")
+dev.off()
